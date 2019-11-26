@@ -7,7 +7,7 @@ public class DijkstraAlgorithm extends PathfindingAlgorithm{
 	}
 	
 	@Override
-	List<Node> execute() {
+	List<AStarNode> execute() {
 		return null;
 	}
 	

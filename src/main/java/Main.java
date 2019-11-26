@@ -9,13 +9,13 @@ public class Main {
 		world.generateTerrainAuto(0.25f);
 		
 		PathfindingAlgorithm astar = new AStarAlgorithm(world);
-		List<Node> path = astar.executeRandom();
+		List<AStarNode> path = astar.executeRandom();
 		WorldPrinter.printWorldWithPointsAndPath(astar, null);
 		
 		System.out.println("Found path -> " + (path != null));
 		if(path != null) {
 			for(int i = 0; i < path.size(); i++) {
-				Node node = path.get(i);
+				AStarNode node = path.get(i);
 				System.out.print(
 						"(" + node.getRow() + "," + node.getCol() + ") "
 				);

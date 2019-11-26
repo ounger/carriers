@@ -2,27 +2,27 @@ import java.util.*;
 
 class AStarAlgorithm extends PathfindingAlgorithm{
 	
-	private PriorityQueue<Node> openList;
-	private Set<Node> closedList;
+	private PriorityQueue<AStarNode> openList;
+	private Set<AStarNode> closedList;
 	
 	AStarAlgorithm(World world) {
 		super(world);
 	}
 	
 	@Override
-	List<Node> execute() {
+	List<AStarNode> execute() {
 		
 		openList = new PriorityQueue<>();
 		closedList = new HashSet<>();
 		
-		Node startNode = new Node(getStartRow(), getStartCol());
+		AStarNode startNode = new AStarNode(getStartNode().getRow(), getStartNode().getCol());
 		startNode.setFValue(0f);
 		openList.offer(startNode);
 		
 		do {
-			Node currentNode = openList.poll();
-			if(	currentNode.getRow() == getEndRow() &&
-				currentNode.getCol() == getEndCol()) {
+			AStarNode currentNode = openList.poll();
+			if(	currentNode.getRow() == getEndNode().getRow() &&
+				currentNode.getCol() == getEndNode().getCol()) {
 				return createPath(currentNode);
 			}
 			closedList.add(currentNode);
@@ -32,23 +32,23 @@ class AStarAlgorithm extends PathfindingAlgorithm{
 		return null;
 	}
 	
-	private void expandNode(Node node) {
-		for(Node successor : getSuccessors(node)) {
+	private void expandNode(AStarNode node) {
+		for(AStarNode successor : getSuccessors(node)) {
 			if(closedList.contains(successor)) {
 				continue;
 			}
 			
-			float tentativeG = node.calcGValue(getStartRow(), getStartCol()) + 1;
+			float tentativeG = node.calcGValue(getStartNode().getRow(), getStartNode().getCol()) + 1;
 			
 			if( openList.contains(successor) && 
-				tentativeG >= successor.getGValue(getStartRow(), getStartCol())) {
+				tentativeG >= successor.getGValue(getStartNode().getRow(), getStartNode().getCol())) {
 				continue;
 			}
 			
 			successor.setPredecessor(node);
 			successor.setGValue(tentativeG);
 			
-			float f = tentativeG + successor.calcHValue(getEndRow(), getEndCol());
+			float f = tentativeG + successor.calcHValue(getEndNode().getRow(), getEndNode().getCol());
 			if (openList.contains(successor)) {
 	        	openList.remove(successor);
 	        	successor.setFValue(f);
@@ -61,28 +61,26 @@ class AStarAlgorithm extends PathfindingAlgorithm{
 		}
 	}
 	
-	private List<Node> getSuccessors(Node node){
-		List<Node> successors = new ArrayList<>();
-		Node left 	= new Node(node.getRow(), node.getCol() - 1);
-		Node right 	= new Node(node.getRow(), node.getCol() + 1);
-		Node top 	= new Node(node.getRow() - 1, node.getCol());
-		Node bottom = new Node(node.getRow() + 1, node.getCol());
+	private List<AStarNode> getSuccessors(AStarNode node){
+		List<AStarNode> successors = new ArrayList<>();
+		AStarNode left 	= new AStarNode(node.getRow(), node.getCol() - 1);
+		AStarNode right 	= new AStarNode(node.getRow(), node.getCol() + 1);
+		AStarNode top 	= new AStarNode(node.getRow() - 1, node.getCol());
+		AStarNode bottom = new AStarNode(node.getRow() + 1, node.getCol());
 		
-		Node[] neighbours = {left, right, top, bottom};
+		AStarNode[] neighbours = {left, right, top, bottom};
 		
 		for(int i = 0; i < neighbours.length; i++) {
-			Node neighbour = neighbours[i];
-			if(	getWorld().inWorld(
-					neighbour.getRow(), 
-					neighbour.getCol())
+			AStarNode neighbour = neighbours[i];
+			if(	getWorld().inWorld(neighbour)
 				&&
 				(getWorld().getNodeTypeAt(
 						neighbour.getRow(),
 						neighbour.getCol()) == NodeType.GROUND
 						||
-						(neighbour.getRow() == getEndRow()
+						(neighbour.getRow() == getEndNode().getRow()
 						&&
-						neighbour.getCol() == getEndCol()))){
+						neighbour.getCol() == getEndNode().getCol()))){
 				successors.add(neighbour);
 			}
 		}
@@ -90,9 +88,9 @@ class AStarAlgorithm extends PathfindingAlgorithm{
 		return successors;
 	}
 	
-	private List<Node> createPath(Node endNode){
-		List<Node> path = new ArrayList<>();
-		Node pointer = endNode;
+	private List<AStarNode> createPath(AStarNode endNode){
+		List<AStarNode> path = new ArrayList<>();
+		AStarNode pointer = endNode;
 		path.add(endNode);
 		do {
 			pointer = pointer.getPredecessor();

@@ -1,17 +1,13 @@
-public class Node implements Comparable<Node>{
-	private final int row;
-	private final int col;
-	
+public class AStarNode extends Node implements Comparable<AStarNode>{
 	private float f;
 	private float g;
 	private float h;
 	
-	private Node successor;
-	private Node predecessor;
+	private AStarNode successor;
+	private AStarNode predecessor;
 	
-	public Node(final int row, final int col) {
-		this.row = row;
-		this.col = col;
+	public AStarNode(final int row, final int col) {
+		super(row, col);
 	}
 	
 	public void setFValue(float newFValue) {
@@ -28,7 +24,7 @@ public class Node implements Comparable<Node>{
 	}
 	
 	public float calcGValue(int startRow, int startCol) {
-		return calcEuclidianDistance(this.row, this.col, startRow, startCol);
+		return calcEuclidianDistance(getRow(), getCol(), startRow, startCol);
 	}
 	
 	public void setHValue(float newHValue) {
@@ -41,14 +37,14 @@ public class Node implements Comparable<Node>{
 	}
 	
 	public float calcHValue(int endRow, int endCol) {
-		return calcEuclidianDistance(this.row, this.col, endRow, endCol);
+		return calcEuclidianDistance(getRow(), getCol(), endRow, endCol);
 	}
 	
-	public void setSuccessor(Node successor) {
+	public void setSuccessor(AStarNode successor) {
 		this.successor = successor;
 	}
 	
-	public Node getSuccessor() {
+	public AStarNode getSuccessor() {
 		return successor;
 	}
 	
@@ -56,7 +52,7 @@ public class Node implements Comparable<Node>{
 		return successor != null;
 	}
 	
-	public Node getPredecessor() {
+	public AStarNode getPredecessor() {
 		return predecessor;
 	}
 	
@@ -64,20 +60,12 @@ public class Node implements Comparable<Node>{
 		return predecessor != null;
 	}
 	
-	public int getRow() {
-		return row;
-	}
-	
-	public int getCol() {
-		return col;
-	}
-	
 	public float getFValue() {
 		return f;
 	}
 
 	@Override
-	public int compareTo(Node other) {
+	public int compareTo(AStarNode other) {
 		return new Float(this.f).compareTo(new Float(other.f));
 	}
 	
@@ -85,8 +73,8 @@ public class Node implements Comparable<Node>{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + col;
-		result = prime * result + row;
+		result = prime * result + getCol();
+		result = prime * result + getRow();
 		return result;
 	}
 
@@ -98,10 +86,10 @@ public class Node implements Comparable<Node>{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Node other = (Node) obj;
-		if (col != other.col)
+		AStarNode other = (AStarNode) obj;
+		if (getCol() != other.getCol())
 			return false;
-		if (row != other.row)
+		if (getRow()!= other.getRow())
 			return false;
 		return true;
 	}
@@ -116,11 +104,11 @@ public class Node implements Comparable<Node>{
 				Math.pow(absColDistance, 2));
 	}
 	
-	public void setPredecessor(Node pre) {
+	public void setPredecessor(AStarNode pre) {
 		this.predecessor = pre;
 	}
 	
-	public Node predecessor() {
+	public AStarNode predecessor() {
 		return predecessor;
 	}
 }

@@ -70,13 +70,17 @@ public class World{
 		}
 	}
 	
-	public boolean inWorld(int row, int col) {
-		return (row >= 0 						&&
-				row < getWorldHeight() 			&& 
-				col >= 0						&&
-				col < getWorldWidth()
+	public boolean inWorld(Node node) {
+		return (node.getRow() >= 0 					&&
+				node.getRow() < getWorldHeight() 	&&
+				node.getCol() >= 0					&&
+				node.getCol() < getWorldWidth()
 		);
-	}	
+	}
+
+	public boolean startOrEndNodeFeasible(Node node){
+		return inWorld(node) && getNodeTypeAt(node.getRow(), node.getCol()) == NodeType.GROUND;
+	}
 	
 	public int getWorldWidth() {
 		return nodes.length;
