@@ -18,7 +18,7 @@ abstract class PathfindingAlgorithm {
 	/**
 	 * Execute with random generated Nodes within the world.
 	 */
-	final List<AStarNode> executeRandom() {
+	final List<Node> executeRandom() {
 		int startRow;
 		int startCol;
 		int endRow;
@@ -35,7 +35,7 @@ abstract class PathfindingAlgorithm {
 		return execute(new Node(startRow, startCol), new Node(endRow, endCol));
 	}
 	
-	final List<AStarNode> execute(
+	final List<Node> execute(
 			Node startNode,
 			Node endNode) {
 		
@@ -54,7 +54,7 @@ abstract class PathfindingAlgorithm {
 	 * Solves the single source shortest path problem.
 	 * @return The path if it exists.
 	 */
-	abstract List<AStarNode> execute();
+	abstract List<Node> execute();
 	
 	private final boolean checkStartAndEnd(
 			Node startNode,

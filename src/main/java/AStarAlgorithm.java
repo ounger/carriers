@@ -10,7 +10,7 @@ class AStarAlgorithm extends PathfindingAlgorithm{
 	}
 	
 	@Override
-	List<AStarNode> execute() {
+	List<Node> execute() {
 		
 		openList = new PriorityQueue<>();
 		closedList = new HashSet<>();
@@ -88,8 +88,8 @@ class AStarAlgorithm extends PathfindingAlgorithm{
 		return successors;
 	}
 	
-	private List<AStarNode> createPath(AStarNode endNode){
-		List<AStarNode> path = new ArrayList<>();
+	private List<Node> createPath(AStarNode endNode){
+		List<Node> path = new ArrayList<>();
 		AStarNode pointer = endNode;
 		path.add(endNode);
 		do {
@@ -100,5 +100,109 @@ class AStarAlgorithm extends PathfindingAlgorithm{
 		Collections.reverse(path);
 		return path;
 	}
+
+	class AStarNode extends Node implements Comparable<AStarNode> {
+		private float f;
+		private float g;
+		private float h;
+
+		private AStarNode predecessor;
+
+		AStarNode(final int row, final int col) {
+			super(row, col);
+		}
+
+		void setFValue(float newFValue) {
+			this.f = newFValue;
+		}
+
+		void setGValue(float newGValue) {
+			this.g = newGValue;
+		}
+
+		float getGValue(int startRow, int startCol) {
+			if (g == 0f) g = calcGValue(startRow, startCol);
+			return g;
+		}
+
+		float calcGValue(int startRow, int startCol) {
+			return calcEuclidianDistance(startRow, startCol);
+		}
+
+		public void setHValue(float newHValue) {
+			this.h = newHValue;
+		}
+
+		public float getHValue(int endRow, int endCol) {
+			if (h == 0f) h = calcHValue(endRow, endCol);
+			return h;
+		}
+
+		float calcHValue(int endRow, int endCol) {
+			return calcEuclidianDistance(endRow, endCol);
+		}
+
+		AStarNode getPredecessor() {
+			return predecessor;
+		}
+
+		boolean hasPredecessor() {
+			return predecessor != null;
+		}
+
+		public float getFValue() {
+			return f;
+		}
+
+		@Override
+		public int compareTo(AStarNode other) {
+			return new Float(this.f).compareTo(new Float(other.f));
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getCol();
+			result = prime * result + getRow();
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			AStarNode other = (AStarNode) obj;
+			if (getCol() != other.getCol())
+				return false;
+			if (getRow() != other.getRow())
+				return false;
+			return true;
+		}
+
+		float calcEuclidianDistance(
+				int row, int col) {
+			int absRowDistance = Math.abs(this.getRow() - row);
+			int absColDistance = Math.abs(this.getCol() - col);
+			return (float) Math.sqrt(
+					Math.pow(absRowDistance, 2)
+							+
+							Math.pow(absColDistance, 2));
+		}
+
+		void setPredecessor(AStarNode pre) {
+			this.predecessor = pre;
+		}
+
+		public AStarNode predecessor() {
+			return predecessor;
+		}
+
+	}
+
 }
 

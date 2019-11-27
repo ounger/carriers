@@ -7,7 +7,7 @@ public class World{
 	private static float DEFAULT_SOLID_PROBABILITY = 0.2f;
 	
 	public static final int MIN_SIZE = 1;
-	public static final int MAX_SIZE = 20;
+	public static final int MAX_SIZE = 200;
 
 	private NodeType[][] nodes;
 	

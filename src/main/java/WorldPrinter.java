@@ -3,7 +3,7 @@ import java.util.List;
 public class WorldPrinter {
 	
 	static void printWorldWithPointsAndPath( 
-			PathfindingAlgorithm pfa, List<AStarNode> path) {
+			PathfindingAlgorithm pfa, List<Node> path) {
 		if(pfa.getWorld() == null) 
 			throw new IllegalArgumentException("World is missing!");
 		
@@ -22,7 +22,7 @@ public class WorldPrinter {
 				else if(pfa != null && row == pfa.getEndNode().getRow() && col == pfa.getEndNode().getCol()) {
 					System.out.print(NodeType.END.asChar() + " ");
 				}
-				else if(path == null || !path.contains(new AStarNode(row, col))) {
+				else if(path == null || !path.contains(new Node(row, col))) {
 					System.out.print(
 							pfa.getWorld().getNodeTypeAt(row, col).asChar() + " ");
 				}
