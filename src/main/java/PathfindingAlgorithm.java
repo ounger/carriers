@@ -5,14 +5,17 @@ abstract class PathfindingAlgorithm {
 
 	private final World world;
 
+	private boolean diagonalMoving;
+
 	private Node startNode;
 	private Node endNode;
 	
-	PathfindingAlgorithm(World world) {
+	PathfindingAlgorithm(World world, boolean diagonalMoving) {
 		if(world == null) throw new IllegalArgumentException("Missing world!");
 		this.world = world;
 		this.startNode = new Node(-1, -1);
 		this.endNode = new Node(-1, -1);
+		this.diagonalMoving = diagonalMoving;
 	}
 	
 	/**
@@ -76,5 +79,9 @@ abstract class PathfindingAlgorithm {
 	final Node getEndNode(){
 		return endNode;
 	}
-	
+
+	final boolean isDiagonalMovingAllowed(){
+		return diagonalMoving;
+	}
+
 }

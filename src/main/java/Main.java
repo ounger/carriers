@@ -9,7 +9,7 @@ public class Main {
 		world.generateTerrainAuto(1f);
 		world.generateTerrainAuto(0.25f);
 		
-		PathfindingAlgorithm astar = new AStarAlgorithm(world);
+		PathfindingAlgorithm astar = new AStarAlgorithm(world, true);
 		List<Node> path = astar.executeRandom();
 		WorldPrinter.printWorldWithPointsAndPath(astar, null);
 		

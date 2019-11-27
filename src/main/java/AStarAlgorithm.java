@@ -5,8 +5,8 @@ class AStarAlgorithm extends PathfindingAlgorithm{
 	private PriorityQueue<AStarNode> openList;
 	private Set<AStarNode> closedList;
 	
-	AStarAlgorithm(World world) {
-		super(world);
+	AStarAlgorithm(World world, boolean diagonalMoving) {
+		super(world, diagonalMoving);
 	}
 	
 	@Override
@@ -63,12 +63,23 @@ class AStarAlgorithm extends PathfindingAlgorithm{
 	
 	private List<AStarNode> getSuccessors(AStarNode node){
 		List<AStarNode> successors = new ArrayList<>();
-		AStarNode left 	= new AStarNode(node.getRow(), node.getCol() - 1);
+		AStarNode left 	    = new AStarNode(node.getRow(), node.getCol() - 1);
 		AStarNode right 	= new AStarNode(node.getRow(), node.getCol() + 1);
-		AStarNode top 	= new AStarNode(node.getRow() - 1, node.getCol());
-		AStarNode bottom = new AStarNode(node.getRow() + 1, node.getCol());
-		
-		AStarNode[] neighbours = {left, right, top, bottom};
+		AStarNode top 	    = new AStarNode(node.getRow() - 1, node.getCol());
+		AStarNode bottom    = new AStarNode(node.getRow() + 1, node.getCol());
+
+        AStarNode[] neighbours;
+
+		if(isDiagonalMovingAllowed()){
+            AStarNode tl 	= new AStarNode(node.getRow() - 1, node.getCol() - 1);
+            AStarNode tr 	= new AStarNode(node.getRow() - 1, node.getCol() + 1);
+            AStarNode bl 	= new AStarNode(node.getRow() + 1, node.getCol() - 1);
+            AStarNode br    = new AStarNode(node.getRow() + 1, node.getCol() + 1);
+            neighbours = new AStarNode[]{left, right, top, bottom, tl, tr , bl, br};
+        }
+		else{
+            neighbours = new AStarNode[]{left, right, top, bottom};
+        }
 		
 		for(int i = 0; i < neighbours.length; i++) {
 			AStarNode neighbour = neighbours[i];
