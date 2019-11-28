@@ -89,6 +89,10 @@ public class World{
 	public int getWorldHeight() {
 		return nodes[0].length;
 	}
+
+	public void setNodeTypeAt(NodeType nodeType, int row, int col){
+		nodes[col][row] = nodeType;
+	}
 	
 	public NodeType getNodeTypeAt(int row, int col){
 		return nodes[col][row];

@@ -167,7 +167,7 @@ class AStarAlgorithm extends PathfindingAlgorithm{
 
 		@Override
 		public int compareTo(AStarNode other) {
-			return new Float(this.f).compareTo(new Float(other.f));
+			return Float.compare(this.f, other.f);
 		}
 
 		@Override
