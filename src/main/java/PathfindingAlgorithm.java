@@ -59,9 +59,7 @@ abstract class PathfindingAlgorithm {
 	 */
 	abstract List<Node> execute();
 	
-	private final boolean checkStartAndEnd(
-			Node startNode,
-			Node endNode) {
+	private boolean checkStartAndEnd(Node startNode, Node endNode) {
 		return	
 			!(startNode.getRow() == endNode.getRow() && startNode.getCol() == endNode.getCol()) &&
 			world.startOrEndNodeFeasible(startNode) &&

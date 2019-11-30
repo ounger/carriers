@@ -9,6 +9,5 @@ public class Carriers2DSimulation {
 
         GUI gui = new GUI(world);
         gui.showUp();
-
     }
 }

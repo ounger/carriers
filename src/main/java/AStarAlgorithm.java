@@ -1,177 +1,145 @@
 import java.util.*;
 
 class AStarAlgorithm extends PathfindingAlgorithm{
-	
+
+	private static final float SQRT_TWO = 1.4142f;
+
 	private PriorityQueue<AStarNode> openList;
-	private Set<AStarNode> closedList;
-	
-	AStarAlgorithm(World world, boolean diagonalMoving) {
+	private HashSet<AStarNode> closedList;
+
+	AStarAlgorithm(World world, boolean diagonalMoving){
 		super(world, diagonalMoving);
 	}
-	
+
 	@Override
-	List<Node> execute() {
-		
+	List<Node> execute(){
+
 		openList = new PriorityQueue<>();
 		closedList = new HashSet<>();
-		
-		AStarNode startNode = new AStarNode(getStartNode().getRow(), getStartNode().getCol());
-		startNode.setFValue(0f);
+
+		AStarNode startNode = new AStarNode(getStartNode().getRow(), getStartNode().getCol(), 0f);
+		startNode.f = 0f;
+		startNode.g = 0f;
+
 		openList.offer(startNode);
-		
-		do {
+
+		do{
 			AStarNode currentNode = openList.poll();
-			if(	currentNode.getRow() == getEndNode().getRow() &&
-				currentNode.getCol() == getEndNode().getCol()) {
+			if(currentNode == null || (currentNode.getRow() == getEndNode().getRow() && currentNode.getCol() == getEndNode().getCol())){
 				return createPath(currentNode);
 			}
 			closedList.add(currentNode);
 			expandNode(currentNode);
 		}while(!openList.isEmpty());
-		
+
 		return null;
 	}
-	
-	private void expandNode(AStarNode node) {
-		for(AStarNode successor : getSuccessors(node)) {
-			if(closedList.contains(successor)) {
-				continue;
-			}
-			
-			float tentativeG = node.calcGValue(getStartNode().getRow(), getStartNode().getCol()) + 1;
-			
-			if( openList.contains(successor) && 
-				tentativeG >= successor.getGValue(getStartNode().getRow(), getStartNode().getCol())) {
-				continue;
-			}
-			
-			successor.setPredecessor(node);
-			successor.setGValue(tentativeG);
-			
-			float f = tentativeG + successor.calcHValue(getEndNode().getRow(), getEndNode().getCol());
-			if (openList.contains(successor)) {
-	        	openList.remove(successor);
-	        	successor.setFValue(f);
-	        	openList.offer(successor);
-	        }
-	        else {
-	        	successor.setFValue(f);
-	        	openList.offer(successor);
-	        }
-		}
-	}
-	
-	private List<AStarNode> getSuccessors(AStarNode node){
-		List<AStarNode> successors = new ArrayList<>();
-		AStarNode left 	    = new AStarNode(node.getRow(), node.getCol() - 1);
-		AStarNode right 	= new AStarNode(node.getRow(), node.getCol() + 1);
-		AStarNode top 	    = new AStarNode(node.getRow() - 1, node.getCol());
-		AStarNode bottom    = new AStarNode(node.getRow() + 1, node.getCol());
 
-        AStarNode[] neighbours;
-
-		if(isDiagonalMovingAllowed()){
-            AStarNode tl 	= new AStarNode(node.getRow() - 1, node.getCol() - 1);
-            AStarNode tr 	= new AStarNode(node.getRow() - 1, node.getCol() + 1);
-            AStarNode bl 	= new AStarNode(node.getRow() + 1, node.getCol() - 1);
-            AStarNode br    = new AStarNode(node.getRow() + 1, node.getCol() + 1);
-            neighbours = new AStarNode[]{left, right, top, bottom, tl, tr , bl, br};
-        }
-		else{
-            neighbours = new AStarNode[]{left, right, top, bottom};
-        }
-		
-		for(int i = 0; i < neighbours.length; i++) {
-			AStarNode neighbour = neighbours[i];
-			if(	getWorld().inWorld(neighbour)
-				&&
-				(getWorld().getNodeTypeAt(
-						neighbour.getRow(),
-						neighbour.getCol()) == NodeType.GROUND
-						||
-						(neighbour.getRow() == getEndNode().getRow()
-						&&
-						neighbour.getCol() == getEndNode().getCol()))){
-				successors.add(neighbour);
-			}
-		}
-		
-		return successors;
-	}
-	
 	private List<Node> createPath(AStarNode endNode){
 		List<Node> path = new ArrayList<>();
 		AStarNode pointer = endNode;
 		path.add(endNode);
-		do {
-			pointer = pointer.getPredecessor();
+		do{
+			pointer = pointer.predecessor;
 			path.add(pointer);
-		}while(pointer.hasPredecessor());
-		
+		}while(pointer.predecessor != null);
+
 		Collections.reverse(path);
 		return path;
 	}
 
-	class AStarNode extends Node implements Comparable<AStarNode> {
-		private float f;
-		private float g;
-		private float h;
+	private void expandNode(AStarNode currentNode){
+		for(AStarNode successor : getSuccessors(currentNode)){
 
+			if(closedList.contains(successor)) continue;
+
+			float tentativeG = currentNode.g + successor.cost;
+
+			if(openList.contains(successor) && tentativeG >= successor.g) continue;
+
+			successor.predecessor = currentNode;
+			successor.g = tentativeG;
+			successor.f = tentativeG + successor.h;
+
+			if(openList.contains(successor)){
+				openList.remove(successor);
+				openList.offer(successor);
+			}else{
+				openList.offer(successor);
+			}
+		}
+	}
+
+	private List<AStarNode> getSuccessors(AStarNode currentNode){
+		AStarNode left 		= new AStarNode(currentNode.getRow(), currentNode.getCol() - 1, 1f);
+		AStarNode right 	= new AStarNode(currentNode.getRow(), currentNode.getCol() + 1, 1f);
+		AStarNode top 		= new AStarNode(currentNode.getRow() - 1, currentNode.getCol(), 1f);
+		AStarNode bottom 	= new AStarNode(currentNode.getRow() + 1, currentNode.getCol(), 1f);
+
+		AStarNode[] neighbours;
+
+		if(isDiagonalMovingAllowed()){
+			AStarNode tl 	= new AStarNode(currentNode.getRow() - 1, currentNode.getCol() - 1, SQRT_TWO);
+			AStarNode tr 	= new AStarNode(currentNode.getRow() - 1, currentNode.getCol() + 1, SQRT_TWO);
+			AStarNode bl 	= new AStarNode(currentNode.getRow() + 1, currentNode.getCol() - 1, SQRT_TWO);
+			AStarNode br 	= new AStarNode(currentNode.getRow() + 1, currentNode.getCol() + 1, SQRT_TWO);
+			neighbours = new AStarNode[]{tl, tr, bl, br, left, right, top, bottom};
+		}else{
+			neighbours = new AStarNode[]{left, right, top, bottom};
+		}
+
+		List<AStarNode> successors = new ArrayList<>();
+
+		for(AStarNode neighbour : neighbours){
+			if(getWorld().inWorld(neighbour) &&
+					!closedList.contains(neighbour) &&
+					!openList.contains(neighbour) &&
+					(getWorld().getNodeTypeAt(neighbour.getRow(), neighbour.getCol()) == NodeType.GROUND ||
+							(neighbour.getRow() == getEndNode().getRow() && neighbour.getCol() == getEndNode().getCol()))
+			){
+				successors.add(neighbour);
+			}
+		}
+		return successors;
+	}
+
+	class AStarNode extends Node implements Comparable<AStarNode>{
+		private float f = Float.MAX_VALUE;
+		private float g = Float.MAX_VALUE;
+		private float h;
+		private float cost;
 		private AStarNode predecessor;
 
-		AStarNode(final int row, final int col) {
+		private AStarNode(final int row, final int col, float cost){
 			super(row, col);
-		}
-
-		void setFValue(float newFValue) {
-			this.f = newFValue;
-		}
-
-		void setGValue(float newGValue) {
-			this.g = newGValue;
-		}
-
-		float getGValue(int startRow, int startCol) {
-			if (g == 0f) g = calcGValue(startRow, startCol);
-			return g;
-		}
-
-		float calcGValue(int startRow, int startCol) {
-			return calcEuclidianDistance(startRow, startCol);
-		}
-
-		public void setHValue(float newHValue) {
-			this.h = newHValue;
-		}
-
-		public float getHValue(int endRow, int endCol) {
-			if (h == 0f) h = calcHValue(endRow, endCol);
-			return h;
-		}
-
-		float calcHValue(int endRow, int endCol) {
-			return calcEuclidianDistance(endRow, endCol);
-		}
-
-		AStarNode getPredecessor() {
-			return predecessor;
-		}
-
-		boolean hasPredecessor() {
-			return predecessor != null;
-		}
-
-		public float getFValue() {
-			return f;
+			this.h = heuristic();
+			this.cost = cost;
 		}
 
 		@Override
-		public int compareTo(AStarNode other) {
-			return Float.compare(this.f, other.f);
+		public int compareTo(AStarNode other){
+			return Float.compare(f, other.f);
+		}
+
+		private float heuristic(){
+			float dx = Math.abs(getEndNode().getRow() - getRow());
+			float dy = Math.abs(getEndNode().getCol() - getCol());
+			if(isDiagonalMovingAllowed()){
+				float D = 1;
+				float D2 = SQRT_TWO;
+				return D * Math.max(dx, dy) + (D2-D) * Math.min(dx, dy);
+//				return 0f;
+			}else{
+				return calcEuclidianDistance(dx, dy);
+			}
+		}
+
+		private float calcEuclidianDistance(float dx, float dy){
+			return (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 		}
 
 		@Override
-		public int hashCode() {
+		public int hashCode(){
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + getCol();
@@ -180,40 +148,19 @@ class AStarAlgorithm extends PathfindingAlgorithm{
 		}
 
 		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
+		public boolean equals(Object obj){
+			if(this == obj)
 				return true;
-			if (obj == null)
+			if(obj == null)
 				return false;
-			if (getClass() != obj.getClass())
+			if(getClass() != obj.getClass())
 				return false;
 			AStarNode other = (AStarNode) obj;
-			if (getCol() != other.getCol())
+			if(getCol() != other.getCol())
 				return false;
-			if (getRow() != other.getRow())
-				return false;
-			return true;
-		}
-
-		float calcEuclidianDistance(
-				int row, int col) {
-			int absRowDistance = Math.abs(this.getRow() - row);
-			int absColDistance = Math.abs(this.getCol() - col);
-			return (float) Math.sqrt(
-					Math.pow(absRowDistance, 2)
-							+
-							Math.pow(absColDistance, 2));
-		}
-
-		void setPredecessor(AStarNode pre) {
-			this.predecessor = pre;
-		}
-
-		public AStarNode predecessor() {
-			return predecessor;
+			return getRow() == other.getRow();
 		}
 
 	}
-
 }
 

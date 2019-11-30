@@ -12,7 +12,7 @@ public class Main {
 		PathfindingAlgorithm astar = new AStarAlgorithm(world, true);
 		List<Node> path = astar.executeRandom();
 		WorldPrinter.printWorldWithPointsAndPath(astar, null);
-		
+
 		System.out.println("Found path -> " + (path != null));
 		if(path != null) {
 			for(int i = 0; i < path.size(); i++) {
