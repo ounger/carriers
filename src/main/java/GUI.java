@@ -169,11 +169,11 @@ public class GUI extends JFrame{
                 if(path != null){
                     addPath(path);
                     JOptionPane.showMessageDialog(this,
-                            "Path was found.");
+                            "Weg gefunden.");
                 }
                 else{
                     JOptionPane.showMessageDialog(this,
-                            "No path was found.");
+                            "Kein Weg gefunden.");
                 }
             }
             else{
