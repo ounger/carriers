@@ -4,26 +4,25 @@ public class Node {
     private final int row;
     private final int col;
 
-    public Node(int row, int col){
+    Node(int row, int col){
         this.row = row;
         this.col = col;
     }
 
-    public int getRow() {
+    int getRow() {
         return row;
     }
 
-    public int getCol() {
+    int getCol() {
         return col;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Node node = (Node) o;
-        return row == node.row &&
-                col == node.col;
+    public final boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        Node node = (Node) other;
+        return row == node.row && col == node.col;
     }
 
     @Override

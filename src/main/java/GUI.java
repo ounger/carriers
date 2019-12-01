@@ -164,7 +164,7 @@ public class GUI extends JFrame{
                 paths.clear();
                 untoggleRightSideButtons();
                 drawMode = DrawMode.NONE;
-                AStarAlgorithm aStarAlgorithm = new AStarAlgorithm(world, diagonalMovingCheckBox.getState());
+                AStar aStarAlgorithm = new AStar(world, diagonalMovingCheckBox.getState());
                 ArrayList path = (ArrayList) aStarAlgorithm.execute(startNode, endNode);
                 if(path != null){
                     addPath(path);

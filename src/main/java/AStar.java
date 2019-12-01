@@ -1,11 +1,11 @@
 import java.util.*;
 
-class AStarAlgorithm extends PathfindingAlgorithm{
+class AStar extends PathfindingAlgorithm{
 
 	private PriorityQueue<AStarNode> openList;
 	private HashSet<AStarNode> closedSet;
 
-	AStarAlgorithm(World world, boolean diagonalMoving){
+	AStar(World world, boolean diagonalMoving){
 		super(world, diagonalMoving);
 	}
 
@@ -93,7 +93,29 @@ class AStarAlgorithm extends PathfindingAlgorithm{
 		return successors;
 	}
 
-	class AStarNode extends Node{
+	int heuristic(Node node){
+		if(isDiagonalMovingAllowed()){
+			return calcChebyshevDistance(node.getRow(), node.getCol(), getEndNode().getRow(), getEndNode().getCol());
+		}else{
+			return calcManhattanDistance(node.getRow(), node.getCol(), getEndNode().getRow(), getEndNode().getCol());
+		}
+	}
+
+	private int calcManhattanDistance(int row1, int col1, int row2, int col2){
+		int dx = Math.abs(row1 - row2);
+		int dy = Math.abs(col1 - col2);
+		return dx + dy;
+	}
+
+	private int calcChebyshevDistance(int row1, int col1, int row2, int col2){
+		int dx = Math.abs(row1 - row2);
+		int dy = Math.abs(col1 - col2);
+		int D = 1;
+		int D2 = 1;
+		return D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy);
+	}
+
+	private class AStarNode extends Node{
 		private int f = 1_000_000;
 		private int g = 1_000_000;
 		private int h;
@@ -102,42 +124,8 @@ class AStarAlgorithm extends PathfindingAlgorithm{
 
 		private AStarNode(int row, int col, int cost){
 			super(row, col);
-			this.h = heuristic();
+			this.h = heuristic(this);
 			this.cost = cost;
-		}
-
-		private int heuristic(){
-			if(isDiagonalMovingAllowed()){
-				return calcDiagonalDistance();
-			}else{
-				return calcManhattanDistance();
-			}
-		}
-
-		private int calcManhattanDistance(){
-			int dx = Math.abs(getEndNode().getRow() - getRow());
-			int dy = Math.abs(getEndNode().getCol() - getCol());
-			return dx + dy;
-		}
-
-		private int calcDiagonalDistance(){
-			int dx = Math.abs(getEndNode().getRow() - getRow());
-			int dy = Math.abs(getEndNode().getCol() - getCol());
-			int D = 1;
-			int D2 = 1;
-			return D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy);
-		}
-
-		@Override
-		public boolean equals(Object obj){
-			if(this == obj)
-				return true;
-			if(obj == null)
-				return false;
-			Node other = (Node) obj;
-			if(getCol() != other.getCol())
-				return false;
-			return getRow() == other.getRow();
 		}
 	}
 }
